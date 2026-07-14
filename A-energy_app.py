@@ -27,7 +27,7 @@ if not cookies.ready():
 def check_login():
     if cookies.get("auth_status") == "logged_in":
         return True
-    st.title("能源系统分析 - 身份验证")
+    st.title("新能源项目源荷储匹配分析平台 - 身份验证")
     with st.form("login_form"):
         user_input = st.text_input("账号")
         pw_input = st.text_input("密码", type="password")
