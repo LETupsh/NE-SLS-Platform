@@ -1,4 +1,7 @@
 import streamlit as st
+
+# ===================== 0.1 兼容性补丁 (修复 Python 3.14/Streamlit 报错) =====================
+# 解决 streamlit-cookies-manager 内部调用已弃用/移除的 st.cache 问题
 if not hasattr(st, "cache"):
     st.cache = st.cache_data
 
@@ -22,6 +25,7 @@ USER_CREDENTIALS = {
 
 # ===================== 0. 登录与 Cookie =====================
 cookies = EncryptedCookieManager(
+    prefix="energy-app/",
     password=os.environ.get("COOKIES_PASSWORD", "a_very_secret_password_12345")
 )
 if not cookies.ready():
