@@ -8,7 +8,6 @@ if not hasattr(st, "cache"):
 import datetime
 import io
 import math
-import os
 import altair as alt
 import numpy as np
 import openpyxl
@@ -16,17 +15,27 @@ from openpyxl.styles import Alignment, Font
 import pandas as pd
 from streamlit_cookies_manager import EncryptedCookieManager
 
-# ===================== 用户数据库 =====================
-USER_CREDENTIALS = {
-    "msj01": "888888",
-    "cyt01": "888888",
-    "user01": "000000"
-}
+# ===================== 用户数据库（已迁移到 Streamlit secrets，请勿在代码中硬编码密码）=====================
+# 配置方法见 .streamlit/secrets.toml.example（本地）
+# 或 Streamlit Cloud -> App -> Settings -> Secrets（线上）
+try:
+    USER_CREDENTIALS = dict(st.secrets["users"])
+except Exception:
+    # secrets 未配置 [users] 段时安全兜底：所有账号都无法登录（fail-closed）
+    USER_CREDENTIALS = {}
 
 # ===================== 0. 登录与 Cookie =====================
+try:
+    _cookie_password = st.secrets["cookie_password"]
+except Exception as e:
+    raise RuntimeError(
+        "缺少登录配置：请在 .streamlit/secrets.toml（参考 .streamlit/secrets.toml.example）"
+        "或 Streamlit Cloud 的 App -> Settings -> Secrets 中配置 cookie_password 和 [users]"
+    ) from e
+
 cookies = EncryptedCookieManager(
     prefix="energy-app/",
-    password=os.environ.get("COOKIES_PASSWORD", "a_very_secret_password_12345")
+    password=_cookie_password
 )
 if not cookies.ready():
     st.stop()
